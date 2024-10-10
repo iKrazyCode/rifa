@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIFA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> <!-- Link para o arquivo CSS -->
+</head>
+<body>
+    <div class="container">
+        <div class="rifas">
+            <h1>RIFA - R$78.580,47</h1>
+            <div class="squares">
+                <!-- Rifas serão geradas pelo JavaScript -->
+            </div>
+            <div class="data-contador">
+                DATA: 31/10/2024 - Faltam <span class="contador" id="contador">0d 0h 0m 0s</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para compra -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close" id="close">&times;</span>
+            <h2>Comprar Rifa - Número <span id="selected-number"></span></h2>
+            <form id="purchase-form">
+                <label for="nome">NOME:</label>
+                <input type="text" id="nome" name="nome" required>
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" name="cpf" required>
+                <label for="telefone">TELEFONE:</label>
+                <input type="text" id="telefone" name="telefone" required>
+                <button type="submit" class="comprar-button">COMPRAR</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const squaresContainer = document.querySelector('.squares');
+        const modal = document.getElementById('modal');
+        const closeModal = document.getElementById('close');
+        const purchaseForm = document.getElementById('purchase-form');
+        const selectedNumberElement = document.getElementById('selected-number');
+        let selectedNumber = null;
+
+        // Geração das Rifas
+        for(let i = 1; i <= 105; i++) {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.setAttribute('data-number', i);
+            square.addEventListener('click', () => {
+                selectedNumber = i; // Armazena o número selecionado
+                selectedNumberElement.textContent = selectedNumber; // Atualiza o número no modal
+                modal.style.display = 'block'; // Abre o modal
+            });
+            squaresContainer.appendChild(square);
+        }
+
+        // Função para Atualizar o Contador
+        function atualizarContador() {
+            const contador = document.getElementById('contador');
+            const dataAlvo = new Date('2024-10-31T00:00:00').getTime();
+            const agora = new Date().getTime();
+            const distancia = dataAlvo - agora;
+
+            if (distancia < 0) {
+                contador.textContent = 'Evento finalizado';
+                clearInterval(intervalo);
+                return;
+            }
+
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+            contador.textContent = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+        }
+
+        const intervalo = setInterval(atualizarContador, 1000);
+        atualizarContador();
+
+        // Função para fechar o modal
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none'; // Fecha o modal
+        });
+
+        // Função para enviar o formulário
+        purchaseForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Evita o envio padrão do formulário
+            const nome = document.getElementById('nome').value;
+            const cpf = document.getElementById('cpf').value;
+            const telefone = document.getElementById('telefone').value;
+
+            //DADOS
+            console.log(`Número: ${selectedNumber}, Nome: ${nome}, CPF: ${cpf}, Telefone: ${telefone}`);
+
+            // Fecha o modal após o envio
+            modal.style.display = 'none'; 
+            purchaseForm.reset(); // Reseta o formulário
+        });
+
+        // Fecha o modal ao clicar fora dele
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
